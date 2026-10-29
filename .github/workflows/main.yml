@@ -35,13 +35,13 @@ jobs:
 
       - name: SonarQube scan and quality gate
         env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_URL: ${{ secrets.SONAR_URL }}
           SONAR_PASSWORD: ${{ secrets.SONAR_PASSWORD }}
         run: |
           mvn -f MyWebApp/pom.xml \
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=MyWebApp \
-            -Dsonar.host.url="$SONAR_HOST_URL" \
+            -Dsonar.host.url="$SONAR_URL" \
             -Dsonar.qualitygate.wait=true
 
       - name: Upload artifact to Nexus
