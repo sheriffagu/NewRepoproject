@@ -36,7 +36,7 @@ jobs:
       - name: SonarQube scan and quality gate
         env:
           SONAR_URL: ${{ secrets.SONAR_URL }}
-          SONAR_PASSWORD: ${{ secrets.SONAR_PASSWORD }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn -f MyWebApp/pom.xml \
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
