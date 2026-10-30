@@ -52,4 +52,35 @@ jobs:
         run: |
           curl --fail --user "$NEXUS_USERNAME:$NEXUS_PASSWORD" \
             --upload-file MyWebApp/target/MyWebApp.war \
-            "$NEXUS_URL/com/dept/app/MyWebApp/1.0-SNAPSHOT/MyWebApp-1.0-SNAPSHOT.war"    
+            "$NEXUS_URL/com/dept/app/MyWebApp/1.0-SNAPSHOT/MyWebApp-1.0-SNAPSHOT.war" 
+      - name: Deploy to Tomcat
+        env:
+          TOMCAT_USER: ${{ secrets.TOMCAT_USER }}
+          TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
+          TOMCAT_HOST: ${{ secrets.TOMCAT_HOST }}
+        run: |
+          curl -v -u "$TOMCAT_USER:$TOMCAT_PASSWORD" \
+            -T MyWebApp/target/MyWebApp.war \
+            "http://$TOMCAT_HOST/manager/text/deploy?path=/MyWebApp&update=true"
+
+      - name: Notify Slack on success
+        if: success()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "✅ Build succeeded for `${{ github.repository }}`"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "❌ Build failed for `${{ github.repository }}`"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}    
